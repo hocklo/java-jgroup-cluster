@@ -7,7 +7,6 @@ import org.jgroups.View;
  */
 public class JGroupCluster {
 
-    private static final int MAX_ROUNDS = 1000;
     private static final int SLEEP_TIME_IN_MILLIS = 1000;
     private static final String IM_LEADER = "I'm (%s) the leader\n";
     private static final String IM_NOT_LEADER = "I'm (%s) not the leader, the leader is %s\n";
@@ -15,14 +14,11 @@ public class JGroupCluster {
     private static final String CLUSTER_MEMBERS = "Cluster members";
 
     public static void main(String[] args) throws Exception {
+        JChannel channel = new JChannel();
         while (true) {
-            JChannel channel = new JChannel();
             channel.connect("The Test Cluster"); // Cluster name grouping the leaders with slaves.
-            for (int round = 0; round < MAX_ROUNDS; round++) {
-                checkLeaderStatus(channel);
-                sleep();
-            }
-            channel.close();
+            checkLeaderStatus(channel);
+            sleep();
         }
     }
 
@@ -41,8 +37,7 @@ public class JGroupCluster {
     }
 
     private static void printWhoIam(JChannel channel, View view) {
-        Address address = view.getMembers()
-                .get(0);
+        Address address = view.getMembers().get(0);
         if (address.equals(channel.getAddress())) {
             System.out.println(String.format(IM_LEADER, channel.getAddress()));
         } else {
